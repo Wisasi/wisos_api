@@ -1,10 +1,10 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 require APPPATH.'/libraries/REST_Controller.php';
-class Post extends REST_Controller {
+class Foto extends REST_Controller {
 	public function __construct()
     {
         parent::__construct();
-        $this->load->model('post_model');
+        $this->load->model('foto_model');
     }
 
     function create_post()
@@ -12,38 +12,39 @@ class Post extends REST_Controller {
 		$this->benchmark->mark('code_start');
 		$validation = 'ok';
 
-		$id_user 	= filter($this->post('id_user'));
-		$id_foto 	= filter(trim($this->post('id_foto')));
-		$id_video 	= filter(trim($this->post('id_video')));
-		$tag 		= filter(trim($this->post('tag')));
-		$tgl_add 	= filter(trim($this->post('tgl_add')));
-		$description= filter($this->post('description'));
+		$id_album 		= filter($this->post('id_album'));
+		$name 			= filter($this->post('name'));
+		$description 	= filter($this->post('description'));
+		$link 			= filter($this->post('link'));
+		$posisi 		= filter($this->post('posisi'));
+		$tgl_add 		= filter($this->post('tgl_add'));
+		$tgl_update 	= filter($this->post('tgl_update'));
 		
 		$data = array();
-		if ($id_user == '')
+		if ($id_album == '')
 		{
-			$data['id_user'] = 'Required';
+			$data['id_album'] = 'Required';
 			$validation = 'error';
 			$code = 400;
 		}
-		if ($description == '')
+		if ($name == '')
 		{
-			$data['description'] = 'Required';
+			$data['name'] = 'Required';
 			$validation = 'error';
 			$code = 400;
 		}
 		if ($validation == 'ok')
 		{
 			$param = array();
-			$param['id_post'] 	= '';
-			$param['id_user'] 	= $id_user;
-			$param['id_foto'] 	= $id_foto;
-			$param['id_video'] 	= $id_video;
-			$param['tag'] 		= $tag;
-			$param['tgl_add'] 	= date('Y-m-d H:i:s');
-			$param['tgl_update']= date('Y-m-d H:i:s');
-			$param['description'] 		= $description;
-			$query = $this->post_model->create($param);
+			$param['id_foto'] 		= '';
+			$param['id_album'] 		= $id_album;
+			$param['name'] 			= $name;
+			$param['description'] 	= $description;
+			$param['link'] 			= $link;
+			$param['tgl_add'] 		= date('Y-m-d H:i:s');
+			$param['tgl_update'] 	= date('Y-m-d H:i:s');
+
+			$query = $this->foto_model->create($param);
 			if ($query > 0)
 			{
 				$data['create'] = 'Success';
@@ -76,7 +77,7 @@ class Post extends REST_Controller {
 		$sort = filter($this->get('sort'));
 		$q = filter($this->get('q'));
 
-		$default_order = array('tgl_add','id_post','description');
+		$default_order = array('tgl_add','id_foto','id_album','name');
 		$default_sort = array('desc','asc');
 
 		if ($limit != '' && $limit < 20)
@@ -124,8 +125,9 @@ class Post extends REST_Controller {
 		$param['q'] = $q;
 		$param2['q'] = $q;
 
-		$query = $this->post_model->lists($param);
-		$total = $this->post_model->lists_count($param2);
+		$query = $this->foto_model->lists($param);
+		
+
 
 		$data = array();
 		if ($query)
@@ -133,14 +135,13 @@ class Post extends REST_Controller {
 			foreach ($query as $i => $u)
 			{
 				$data[$i] = array(
-					'id_post' 	=> $u->id_post,
-					'id_user' 	=> $u->id_user,
-					'description' 		=> $u->description,
-					'id_foto' 	=> $u->id_foto,
-					'id_video' 	=> $u->id_video,
-					'tag' 		=> $u->tag,
-					'tgl_add' 	=> $u->tgl_add,
-					'tgl_update'=> $u->tgl_update
+					'id_foto' 		=> $u->id_foto,
+					'id_album' 		=> $u->id_album,
+					'name' 			=> $u->name,
+					'description' 	=> $u->description,
+					'link' 			=> $u->link,
+					'tgl_add' 		=> $u->tgl_add,
+					'tgl_update'	=> $u->tgl_update
 				);
 			}
 		}
@@ -162,51 +163,45 @@ class Post extends REST_Controller {
 		$this->benchmark->mark('code_start');
 		$validation = 'ok';
 		
-		$id_post 	= filter($this->post('id_post'));
-		$description 		= filter($this->post('description'));
-		$id_foto 	= filter($this->post('id_foto'));
-		$id_video 	= filter($this->post('id_video'));
-		$tag 		= filter($this->post('tag'));
+		$id_foto 		= filter($this->post('id_foto'));
+		$id_album 		= filter($this->post('id_album'));
+		$name 			= filter($this->post('name'));
+		$description 	= filter($this->post('description'));
 		
 		$data = array();
-		if ($id_post == '')
+		if ($id_foto == '')
 		{
-			$data['id_post'] = 'Required';
+			$data['id_foto'] = 'Required';
 			$validation = 'error';
 			$code = 400;
 		}
 		
 		if ($validation == 'ok')
 		{
-			$query = $this->post_model->info(array('id_post' => $id_post));
+			$query = $this->foto_model->info(array('id_foto' => $id_foto));
 			
 			if ($query->num_rows() > 0)
 			{
 				$param = array();
+				if ($name != '')
+				{
+					$param['name'] = $name;
+				}
+				
+				if ($id_album != '')
+				{
+					$param['id_album'] = $id_album;
+				}
+				
 				if ($description != '')
 				{
 					$param['description'] = $description;
 				}
 				
-				if ($id_foto != '')
-				{
-					$param['id_foto'] = $id_foto;
-				}
-				
-				if ($id_video != '')
-				{
-					$param['id_video'] = $id_video;
-				}
-
-				if ($tag != '')
-				{
-					$param['tag'] = $tag;
-				}
-				
 				if (count($param) > 0)
 				{
 					$param['tgl_update'] = date('Y-m-d H:i:s');
-					$update = $this->post_model->update($id_post, $param);
+					$update = $this->foto_model->update($id_foto, $param);
 					
 					if ($update > 0)
 					{
@@ -250,23 +245,23 @@ class Post extends REST_Controller {
 		$this->benchmark->mark('code_start');
 		$validation = 'ok';
 		
-        $id_post = filter($this->post('id_post'));
+        $id_foto = filter($this->post('id_foto'));
         
 		$data = array();
-        if ($id_post == '')
+        if ($id_foto == '')
 		{
-			$data['id_post'] = 'Required';
+			$data['id_foto'] = 'Required';
 			$validation = "error";
 			$code = 400;
 		}
         
         if ($validation == "ok")
 		{
-            $query = $this->post_model->info(array('id_post' => $id_post));
+            $query = $this->foto_model->info(array('id_foto' => $id_foto));
 			
 			if ($query->num_rows() > 0)
 			{
-                $delete = $this->post_model->delete($id_post);
+                $delete = $this->foto_model->delete($id_foto);
 				
 				if ($delete > 0)
 				{
@@ -283,7 +278,7 @@ class Post extends REST_Controller {
 			}
 			else
 			{
-				$data['delete'] = 'ID Not Found';
+				$data['delete'] = 'ID Foto Not Found';
 				$validation = "error";
 				$code = 400;
 			}
@@ -296,6 +291,72 @@ class Post extends REST_Controller {
 		$this->benchmark->mark('code_end');
 		$rv['load'] = $this->benchmark->elapsed_time('code_start', 'code_end') . ' seconds';
 		$this->response($rv, $code);
+	}
+
+	public function info_get()
+	{
+		$this->benchmark->mark('code_start');
+
+		$id_foto = filter($this->get('id_foto'));
+		$data = array();
+
+		if($id_foto == '')
+		{
+			$data['id_foto'] = 'Required';
+			$validation = "error";
+			$code = 400;
+
+			$rv = array();
+			$rv['message'] = $validation;
+			$rv['code'] = $code;
+			$rv['result'] = $data;
+			$this->benchmark->mark('code_end');
+			$rv['load'] = $this->benchmark->elapsed_time('code_start', 'code_end') . ' seconds';
+			$this->response($rv, $code);
+		}
+		else
+		{
+			$query = $this->foto_model->infos($id_foto);
+			$total = $this->foto_model->infos_count($id_foto);
+
+			if($total == "1")
+			{
+				if ($query)
+				{
+					foreach ($query as $i => $u)
+					{
+						$data[$i] = array(
+							'id_foto' 		=> $u->id_foto,
+							'id_album' 		=> $u->id_album,
+							'name' 			=> $u->name,
+							'description' 	=> $u->description,
+							'link' 			=> $u->link,
+							'tgl_add' 		=> $u->tgl_add,
+							'tgl_update'	=> $u->tgl_update
+						);
+					}
+				}
+
+				$output = array();
+				$output['message'] = 'ok';
+				$output['code'] = 200;
+				$output['result'] = $data;
+				$this->benchmark->mark('code_end');
+				$output['load'] = $this->benchmark->elapsed_time('code_start', 'code_end') . ' seconds';
+				$this->response($output, 200);
+			}
+			else
+			{
+				$output = array();
+				$data['id_foto'] = 'ID photos not found';
+				$output['message'] = 'error';
+				$output['code'] = 400;
+				$output['result'] = $data;
+				$this->benchmark->mark('code_end');
+				$output['load'] = $this->benchmark->elapsed_time('code_start', 'code_end') . ' seconds';
+				$this->response($output, 400);
+			}
+		}
 	}
 }
 
