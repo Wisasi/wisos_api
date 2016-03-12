@@ -447,5 +447,5 @@ class User extends REST_Controller {
 	}
 }
 
-/* End of file Post.php */
-/* Location: ./application/controllers/Post.php */
+/* End of file User.php */
+/* Location: ./application/controllers/User.php */

@@ -90,5 +90,3 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 |--------------------------------------------------------------------------
 |
 */
-
-defined('API_KEY') OR define('API_KEY','7rr3yfh7e3ofdjenu39fh3r9f73rf3fh');

@@ -55,7 +55,23 @@ date_default_timezone_set('Asia/Jakarta');
  *
  * NOTE: If you change these, also change the error_reporting() code below
  */
-	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+	define('LOCALHOST', $_SERVER['HTTP_HOST']);
+	
+	if(is_bool(LOCALHOST) || LOCALHOST == 'localhost')
+	{
+		// localhost atau server local
+		define('ENVIRONMENT', 'development');
+	}
+	elseif(LOCALHOST == 'api-dev-wisos.tokecang.com')
+	{
+		// development
+		define('ENVIRONMENT', 'development');
+	}
+	else
+	{
+		// production
+		define('ENVIRONMENT', 'production');
+	}
 
 /*
  *---------------------------------------------------------------
