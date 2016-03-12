@@ -15,23 +15,23 @@ Release Information
 *******************
 
 Belum Realease `Wisasi Sosial Media
-<https://jejak.wisasi.com>`_ page.
+<http://jejak.wisasi.com>`_ page.
 
 *******
 License
 *******
 
 Please see the `license
-agreement <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/license.rst>`_.
+agreement <https://github.com/Wisasi/wisos_api/blob/v1devel/license.txt>`_.
 
 *********
 Resources
 *********
 
--  `Wisasi Coorporation <https://www.wisasi.com>`_
--  `Pudora <https://www.pudora.com>`_
+-  `Wisasi Coorporation <http://www.wisasi.com>`_
+-  `Pudora <http://www.pudora.com>`_
 -  `Tokecang <http://www.tokecang.com/>`_
 
 Please contact us from `Wisasi Customer Service <mailto:beni.sopian89@gmail.com>`_
-or via our `page on HackerOne <https://hackerone.com/>`_, thank you.
+or via our page on `HackerOne <https://hackerone.com/>`_, thank you.
 
