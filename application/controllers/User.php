@@ -1,10 +1,10 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 require APPPATH.'/libraries/REST_Controller.php';
-class Foto extends REST_Controller {
+class User extends REST_Controller {
 	public function __construct()
     {
         parent::__construct();
-        $this->load->model('foto_model');
+        $this->load->model('user_model');
     }
 
     function create_post()
@@ -12,39 +12,38 @@ class Foto extends REST_Controller {
 		$this->benchmark->mark('code_start');
 		$validation = 'ok';
 
-		$id_album 		= filter($this->post('id_album'));
-		$name 			= filter($this->post('name'));
-		$description 	= filter($this->post('description'));
-		$link 			= filter($this->post('link'));
-		$posisi 		= filter($this->post('posisi'));
-		$tgl_add 		= filter($this->post('tgl_add'));
-		$tgl_update 	= filter($this->post('tgl_update'));
+		$id_user 	= filter($this->post('id_user'));
+		$id_foto 	= filter(trim($this->post('id_foto')));
+		$id_video 	= filter(trim($this->post('id_video')));
+		$tag 		= filter(trim($this->post('tag')));
+		$tgl_add 	= filter(trim($this->post('tgl_add')));
+		$description= filter($this->post('description'));
 		
 		$data = array();
-		if ($id_album == '')
+		if ($id_user == '')
 		{
-			$data['id_album'] = 'Required';
+			$data['id_user'] = 'Required';
 			$validation = 'error';
 			$code = 400;
 		}
-		if ($name == '')
+		if ($description == '')
 		{
-			$data['name'] = 'Required';
+			$data['description'] = 'Required';
 			$validation = 'error';
 			$code = 400;
 		}
 		if ($validation == 'ok')
 		{
 			$param = array();
-			$param['id_foto'] 		= '';
-			$param['id_album'] 		= $id_album;
-			$param['name'] 			= $name;
-			$param['description'] 	= $description;
-			$param['link'] 			= $link;
-			$param['tgl_add'] 		= date('Y-m-d H:i:s');
-			$param['tgl_update'] 	= date('Y-m-d H:i:s');
-
-			$query = $this->foto_model->create($param);
+			$param['id_post'] 	= '';
+			$param['id_user'] 	= $id_user;
+			$param['id_foto'] 	= $id_foto;
+			$param['id_video'] 	= $id_video;
+			$param['tag'] 		= $tag;
+			$param['tgl_add'] 	= date('Y-m-d H:i:s');
+			$param['tgl_update']= date('Y-m-d H:i:s');
+			$param['description'] 		= $description;
+			$query = $this->post_model->create($param);
 			if ($query > 0)
 			{
 				$data['create'] = 'Success';
@@ -77,7 +76,7 @@ class Foto extends REST_Controller {
 		$sort = filter($this->get('sort'));
 		$q = filter($this->get('q'));
 
-		$default_order = array('tgl_add','id_foto','id_album','name');
+		$default_order = array('tgl_add','id_user','username');
 		$default_sort = array('desc','asc');
 
 		if ($limit != '' && $limit < 20)
@@ -125,22 +124,35 @@ class Foto extends REST_Controller {
 		$param['q'] = $q;
 		$param2['q'] = $q;
 
-		$query = $this->foto_model->lists($param);
-		$total = $this->foto_model->lists_count($param2);
-		
+		$query = $this->user_model->lists($param);
+		$total = $this->user_model->lists_count($param2);
+
 		$data = array();
 		if ($query)
 		{
 			foreach ($query as $i => $u)
 			{
 				$data[$i] = array(
+					'id_user' 		=> $u->id_user,
+					'username' 		=> $u->username,
+					'password' 		=> $u->password,
+					'nama_depan' 	=> $u->nama_depan,
+					'nama_tengah' 	=> $u->nama_tengah,
+					'nama_belakang' => $u->nama_belakang,
+					'email' 		=> $u->email,
+					'no_hp' 		=> $u->no_hp,
+					'barcode' 		=> $u->barcode,
+					'tgl_lahir' 	=> $u->tgl_lahir,
+					'alamat' 		=> $u->alamat,
+					'id_negara' 	=> $u->id_negara,
+					'id_prov' 		=> $u->id_prov,
+					'id_kota' 		=> $u->id_kota,
+					'id_kec' 		=> $u->id_kec,
+					'id_desa' 		=> $u->id_desa,
 					'id_foto' 		=> $u->id_foto,
-					'id_album' 		=> $u->id_album,
-					'name' 			=> $u->name,
-					'description' 	=> $u->description,
-					'link' 			=> $u->link,
-					'tgl_add' 		=> $u->tgl_add,
-					'tgl_update'	=> $u->tgl_update
+					'id_banner' 	=> $u->id_banner,
+					'status' 		=> $u->status,
+					'tgl_add' 		=> $u->tgl_add
 				);
 			}
 		}
@@ -162,45 +174,51 @@ class Foto extends REST_Controller {
 		$this->benchmark->mark('code_start');
 		$validation = 'ok';
 		
-		$id_foto 		= filter($this->post('id_foto'));
-		$id_album 		= filter($this->post('id_album'));
-		$name 			= filter($this->post('name'));
-		$description 	= filter($this->post('description'));
+		$id_post 	= filter($this->post('id_post'));
+		$description 		= filter($this->post('description'));
+		$id_foto 	= filter($this->post('id_foto'));
+		$id_video 	= filter($this->post('id_video'));
+		$tag 		= filter($this->post('tag'));
 		
 		$data = array();
-		if ($id_foto == '')
+		if ($id_post == '')
 		{
-			$data['id_foto'] = 'Required';
+			$data['id_post'] = 'Required';
 			$validation = 'error';
 			$code = 400;
 		}
 		
 		if ($validation == 'ok')
 		{
-			$query = $this->foto_model->info(array('id_foto' => $id_foto));
+			$query = $this->post_model->info(array('id_post' => $id_post));
 			
 			if ($query->num_rows() > 0)
 			{
 				$param = array();
-				if ($name != '')
-				{
-					$param['name'] = $name;
-				}
-				
-				if ($id_album != '')
-				{
-					$param['id_album'] = $id_album;
-				}
-				
 				if ($description != '')
 				{
 					$param['description'] = $description;
 				}
 				
+				if ($id_foto != '')
+				{
+					$param['id_foto'] = $id_foto;
+				}
+				
+				if ($id_video != '')
+				{
+					$param['id_video'] = $id_video;
+				}
+
+				if ($tag != '')
+				{
+					$param['tag'] = $tag;
+				}
+				
 				if (count($param) > 0)
 				{
 					$param['tgl_update'] = date('Y-m-d H:i:s');
-					$update = $this->foto_model->update($id_foto, $param);
+					$update = $this->post_model->update($id_post, $param);
 					
 					if ($update > 0)
 					{
@@ -244,23 +262,23 @@ class Foto extends REST_Controller {
 		$this->benchmark->mark('code_start');
 		$validation = 'ok';
 		
-        $id_foto = filter($this->post('id_foto'));
+        $id_post = filter($this->post('id_post'));
         
 		$data = array();
-        if ($id_foto == '')
+        if ($id_post == '')
 		{
-			$data['id_foto'] = 'Required';
+			$data['id_post'] = 'Required';
 			$validation = "error";
 			$code = 400;
 		}
         
         if ($validation == "ok")
 		{
-            $query = $this->foto_model->info(array('id_foto' => $id_foto));
+            $query = $this->post_model->info(array('id_post' => $id_post));
 			
 			if ($query->num_rows() > 0)
 			{
-                $delete = $this->foto_model->delete($id_foto);
+                $delete = $this->post_model->delete($id_post);
 				
 				if ($delete > 0)
 				{
@@ -277,7 +295,7 @@ class Foto extends REST_Controller {
 			}
 			else
 			{
-				$data['delete'] = 'ID Foto Not Found';
+				$data['delete'] = 'ID Not Found';
 				$validation = "error";
 				$code = 400;
 			}
@@ -296,12 +314,12 @@ class Foto extends REST_Controller {
 	{
 		$this->benchmark->mark('code_start');
 
-		$id_foto = filter($this->get('id_foto'));
+		$id_user = filter($this->get('id_user'));
 		$data = array();
 
-		if($id_foto == '')
+		if($id_user == '')
 		{
-			$data['id_foto'] = 'Required';
+			$data['id_user'] = 'Required';
 			$validation = "error";
 			$code = 400;
 
@@ -315,8 +333,8 @@ class Foto extends REST_Controller {
 		}
 		else
 		{
-			$query = $this->foto_model->infos($id_foto);
-			$total = $this->foto_model->infos_count($id_foto);
+			$query = $this->user_model->infos($id_user);
+			$total = $this->user_model->infos_count($id_user);
 
 			if($total == "1")
 			{
@@ -324,14 +342,84 @@ class Foto extends REST_Controller {
 				{
 					foreach ($query as $i => $u)
 					{
-						$data[$i] = array(
+						$info_negara 	= $this->user_model->get_data_negara($u->id_negara);
+						$info_provinsi 	= $this->user_model->get_data_provinsi($u->id_prov);
+						$info_kota 		= $this->user_model->get_data_kota($u->id_kota);
+						$info_kecamatan = $this->user_model->get_data_kecamatan($u->id_kec);
+						$info_desa 		= $this->user_model->get_data_desa($u->id_desa);
+
+						if ($info_negara)
+						{
+							foreach ($info_negara as $n => $ne)
+							{
+								$negara = array(
+									'id_negara' 	=> $ne->id_negara,
+									'name' 			=> $ne->name
+								);
+							}
+						}
+						if ($info_provinsi)
+						{
+							foreach ($info_provinsi as $p => $pr)
+							{
+								$provinsi = array(
+									'id_provinsi' 	=> $pr->id_provinsi,
+									'name' 			=> $pr->name
+								);
+							}
+						}
+						if ($info_kota)
+						{
+							foreach ($info_kota as $k => $ko)
+							{
+								$kota = array(
+									'id_kota' 		=> $ko->id_kota,
+									'name' 			=> $ko->name
+								);
+							}
+						}
+						if ($info_kecamatan)
+						{
+							foreach ($info_kecamatan as $ke => $kec)
+							{
+								$kecamatan = array(
+									'id_kecamatan' 	=> $kec->id_kecamatan,
+									'name' 			=> $kec->name
+								);
+							}
+						}
+						if ($info_desa)
+						{
+							foreach ($info_desa as $d => $de)
+							{
+								$desa = array(
+									'id_desa' 		=> $de->id_desa,
+									'name' 			=> $de->name
+								);
+							}
+						}
+
+						$data = array(
+							'id_user' 		=> $u->id_user,
+							'username' 		=> $u->username,
+							'password' 		=> $u->password,
+							'nama_depan' 	=> $u->nama_depan,
+							'nama_tengah' 	=> $u->nama_tengah,
+							'nama_belakang' => $u->nama_belakang,
+							'email' 		=> $u->email,
+							'no_hp' 		=> $u->no_hp,
+							'barcode' 		=> $u->barcode,
+							'tgl_lahir' 	=> $u->tgl_lahir,
+							'alamat' 		=> $u->alamat,
+							'negara' 		=> $negara,
+							'provinsi' 		=> $provinsi,
+							'kota' 			=> $kota,
+							'kecamatan' 	=> $kecamatan,
+							'desa' 			=> $desa,
 							'id_foto' 		=> $u->id_foto,
-							'id_album' 		=> $u->id_album,
-							'name' 			=> $u->name,
-							'description' 	=> $u->description,
-							'link' 			=> $u->link,
-							'tgl_add' 		=> $u->tgl_add,
-							'tgl_update'	=> $u->tgl_update
+							'id_banner' 	=> $u->id_banner,
+							'status' 		=> $u->status,
+							'tgl_add' 		=> $u->tgl_add
 						);
 					}
 				}
@@ -347,7 +435,7 @@ class Foto extends REST_Controller {
 			else
 			{
 				$output = array();
-				$data['id_foto'] = 'ID photos not found';
+				$data['id_user'] = 'ID User not found';
 				$output['message'] = 'error';
 				$output['code'] = 400;
 				$output['result'] = $data;
